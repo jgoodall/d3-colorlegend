@@ -20,13 +20,13 @@ The height and width of the legend are defined by the size of target element. Th
     * boxHeight:  integer to set the maximum height of an individual color box (default: 25)
     * title:  string to add to the legend; centered, below the boxes and labels (default: '')
     * fill:  boolean to fill the entire space of the legend (default: false)
-    * linearBoxes: integer to set the number of boxes to show for linear scales (default: 9)
-  
+    * linearBoxes: integer to set the number of boxes to show for linear scales (default: 9)  
 
 ## TODO
   * Option to put labels in the middle of boxes
 
 */
+
 colorlegend = function(target, scale, type, options) {
 
   // check for valid input - 'quantize' not included
@@ -44,11 +44,11 @@ colorlegend = function(target, scale, type, options) {
   }
 
   // empty options if none were passed
-  var opts = arguments.length < 3 ? {} : options;
+  var opts = options || {};
   
   // options or use defaults
-  var boxWidth = opts.boxWidth || 25;     // width of each box (int)
-  var boxHeight = opts.boxHeight || 25;   // height of each box (int)
+  var boxWidth = opts.boxWidth || 20;     // width of each box (int)
+  var boxHeight = opts.boxHeight || 20;   // height of each box (int)
   var title = opts.title || null;         // draw title (string)
   var fill = opts.fill || false;          // fill the element (boolean)
   var linearBoxes = opts.linearBoxes || 9; // number of boxes for linear scales (int)
@@ -65,9 +65,9 @@ colorlegend = function(target, scale, type, options) {
   var h = htmlElement.offsetHeight;
   
   // set padding for legend and individual boxes
-  var padding = [2, 4, 12, 4]; // top, right, bottom, left
-  var boxSpacing = type === 'ordinal' ? 4 : 0; // spacing between boxes
-  var titlePadding = title ? 12 : 0;
+  var padding = [2, 4, 10, 4]; // top, right, bottom, left
+  var boxSpacing = type === 'ordinal' ? 3 : 0; // spacing between boxes
+  var titlePadding = title ? 11 : 0;
   
   // properties of the scale that will be used
   var domain = scale.domain();
@@ -106,28 +106,28 @@ colorlegend = function(target, scale, type, options) {
       .attr('width', w)
       .attr('height', h)
     .append('g')
-      .attr('transform', 'translate(' + padding[3] + ',' + padding[0] + ')');
+      .attr('class', 'colorlegend')
+      .attr('transform', 'translate(' + padding[3] + ',' + padding[0] + ')')
+      .style('font-size', '11px')
+      .style('fill', '#666');
       
   legendBoxes = legend.selectAll('g.legend')
       .data(colors)
-    .enter().append('svg:g')
-      .attr('class', 'legend');
+    .enter().append('g');
 
-  var boxes = legendBoxes.append('svg:rect')
-      .attr('x', function(d,i){ return i*(boxWidth+boxSpacing); } )
-      .attr('width', boxWidth)
-      .attr('height', boxHeight)
-      .style('fill', function(d, i) { return colors[i]; } );
-  
-  // minimum and maximum values at left and right (bottom)
-  legendBoxes.append('svg:text')
-      .attr('class', 'legendLabel')
-      .attr('x', function(d,i) {return i * (boxWidth+boxSpacing) + (boxWidth/2);} )
-      .attr('y', boxHeight+2)
+  // value labels
+  legendBoxes.append('text')
+      .attr('class', 'colorlegend-labels')
       .attr('dy', '.71em')
-      .style('font-size', '10px')
-      .style('fill', '#666')
-      .style('text-anchor', 'middle')
+      .attr('x', function(d,i) {
+        return i * (boxWidth + boxSpacing) + (type !== 'ordinal' ? (boxWidth / 2) : 0);
+      })
+      .attr('y', function(d,i) {
+        return boxHeight + 2;
+      })
+      .style('text-anchor', function(d, i) {
+        return type === 'ordinal' ? 'start' : 'middle';
+      })
       .style('pointer-events', 'none')
       .text(function(d,i) {
         // show label for all ordinal values
@@ -136,19 +136,30 @@ colorlegend = function(target, scale, type, options) {
         }
         // show only the first and last for others
         else {
-          return i === 0 ? domain[0] : (i===colors.length-1 ? domain[domain.length-1] : '');          
+          if (i === 0)
+            return domain[0];
+          if (i === colors.length - 1) 
+            return domain[domain.length - 1];
         }
       });
-
+      
+        
+        
+  legendBoxes.append('rect')
+      .attr('x', function(d,i) { 
+        return i * (boxWidth + boxSpacing);
+      })
+      .attr('width', boxWidth)
+      .attr('height', boxHeight)
+      .style('fill', function(d, i) { return colors[i]; } );
+  
   // show a title in center of legend (bottom)
   if ( title ) {
-    legend.append('svg:text')
-        .attr('class', 'legendTitle')
+    legend.append('text')
+        .attr('class', 'colorlegend-title')
         .attr('x', (colors.length*(boxWidth/2)))
         .attr('y', boxHeight + titlePadding)
         .attr('dy', '.71em')
-        .style('font-size', '10px')
-        .style('fill', '#666')
         .style('text-anchor', 'middle')
         .style('pointer-events', 'none')
         .text(title);

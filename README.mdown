@@ -5,7 +5,7 @@ This script can be used to draw a color legend for a [d3.js scale](https://githu
 ## Usage
 The height and width of the legend are defined by the size of target element. The legend will be drawn on the top left (plus a small amount of padding) of the element, or filled in the entire display if 'fill' option is specified, or if the requested sizes are too big to fit in the available space. 
 
-    colorLegend(target, scale, type, accessor, options);
+    colorLegend(target, scale, type, options);
 
 ### Parameters
   * target: the html element id to put the legend on (usually a div id, #el)
@@ -14,7 +14,6 @@ The height and width of the legend are defined by the size of target element. Th
     * [linear](https://github.com/mbostock/d3/wiki/Quantitative-Scales#wiki-linear): linear scales are drawn with a number of boxes that interpolate between the color range. The first and last items are labeled.
     * [quantile](https://github.com/mbostock/d3/wiki/Quantitative-Scales#wiki-quantile): quantile scales are drawn for each item in the color range. The first and last items are labeled.
     * [ordinal](https://github.com/mbostock/d3/wiki/Ordinal-Scales#wiki-ordinal): ordinal scales are drawn for each item in the color range, with small spacing between the items. Each item is labeled.
-  * accessor: null (for simple array data structures) or a function that defines how to get the data for scaling when the data structure is more than a simple array.
   * options: optional parameters for controling the display
     * boxWidth:  integer to set the maximum width of an individual color box (default: 25)
     * boxHeight:  integer to set the maximum height of an individual color box (default: 25)
@@ -23,5 +22,14 @@ The height and width of the legend are defined by the size of target element. Th
     * linearBoxes: integer to set the number of boxes to show for linear scales (default: 9)
   
   
+## Styles
+
+You can use CSS classes to change the appearance of the title and labels:
+
+  * title: `colorlegend-title`
+  * labels: `colorlegend-labels`
+
+The selector should be something like 'containerId > colorlegend-class', e.g. `d3.select('#linearLegend .colorlegend-title').style('font-size', '20px')`
+
 ## TODO
   * Option to center labels on boxes

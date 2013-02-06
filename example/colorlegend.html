@@ -1,12 +1,12 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <title>Color Legend Example</title>
-    <script type="text/javascript" src="../lib/d3.js"></script>
-    <script type="text/javascript" src="../colorlegend.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="../colorlegend.js"></script>
     <style type="text/css">
 body {
-  font: 10px sans-serif;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif
   background-color: #eee;
 }
 
@@ -16,6 +16,19 @@ body {
   height: 60px;
   border: 1px solid #bbb;
   margin: 10px;
+}
+
+#quantileLegend .colorlegend-labels {
+  font-size: 11px;
+  fill: black;
+}
+#linearLegend .colorlegend-labels {
+  font-size: 9px;
+  fill: #888;
+}
+#ordinalLegend .colorlegend-title {
+  font-size: 18px;
+  fill: #aaa;
 }
     </style>
   </head>
@@ -60,13 +73,13 @@ body {
       var oData = ["A", "B", "C", "D", "E", "F"]
       var oScale = d3.scale.category20()
             .domain(oData);
-      colorlegend("#ordinalLegend", oScale, "ordinal", {title: "ordinal", fill: true});
+      colorlegend("#ordinalLegend", oScale, "ordinal", {title: "ordinal", boxHeight: 6, boxWidth: 20});
 
-      // ordinal scale, with more complex data
-      var oData2 = [{"A": 3}, {"A": 6}, {"A": 7}];
+      // another ordinal scale
+      var oData2 = [{"Apples": 3}, {"Bananas": 6}, {"Coconuts": 7}, {"Dates": 9}, {"Oranges": 7}, {"Canadian Blackberry": 2}];
       var oScale2 = d3.scale.category20c()
-            .domain( d3.range(oData2.length) );
-      colorlegend("#ordinalLegend2", oScale2, "ordinal", {title: "ordinal 2"});
+            .domain( ["Apples", "Bananas", "Coconuts", "Dates", "Oranges", "Canadian Blackberry"] );
+      colorlegend("#ordinalLegend2", oScale2, "ordinal", {boxHeight: 8, boxWidth:60});
 
     </script>
     
