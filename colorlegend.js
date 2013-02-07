@@ -2,33 +2,14 @@
 /*global d3:true */
 
 /*
-# d3.colorLegend
-
-This script can be used to draw a color legend for a [d3.js scale](https://github.com/mbostock/d3/wiki/Scales) on a specified html div element. [d3.js](http://mbostock.github.com/d3/) is required.
-
-## Usage
-The height and width of the legend are defined by the size of target element. The legend will be drawn on the top left (plus a small amount of padding) of the element, or filled in the entire display if 'fill' option is specified, or if the requested sizes are too big to fit in the available space. Labels and an optional title are drawn under the legend.
-
-    colorLegend(target, scale, type, options);
-
-### Parameters
-  * target: the html element id to put the legend on (usually a div id, #el)
-  * scale: the [d3 scale](https://github.com/mbostock/d3/wiki/Scales)
-  * type: the type of d3 scale. Supported scales are:
-    * [linear](https://github.com/mbostock/d3/wiki/Quantitative-Scales#wiki-linear): linear scales are drawn with a number of boxes that interpolate between the color range. The first and last items are labeled.
-    * [quantile](https://github.com/mbostock/d3/wiki/Quantitative-Scales#wiki-quantile): quantile scales are drawn for each item in the color range. The first and last items are labeled.
-    * [ordinal](https://github.com/mbostock/d3/wiki/Ordinal-Scales#wiki-ordinal): ordinal scales are drawn for each item in the color range, with small spacing between the items. Each item is labeled.
-  * options: optional parameters for controling the display
-    * boxWidth:  integer to set the maximum width of an individual color box (default: 25)
-    * boxHeight:  integer to set the maximum height of an individual color box (default: 25)
-    * title:  string to add to the legend; centered, below the boxes and labels (default: '')
-    * fill:  boolean to fill the entire space of the legend (default: false)
-    * linearBoxes: integer to set the number of boxes to show for linear scales (default: 9)  
-
-## TODO
-  * Option to put labels in the middle of boxes
-
-*/
+ * colorlegend
+ *
+ * This script can be used to draw a color legend for a 
+ * [d3.js scale](https://github.com/mbostock/d3/wiki/Scales) 
+ * on a specified html div element. 
+ * [d3.js](http://mbostock.github.com/d3/) is required.
+ *
+ */
 
 'use strict';
 
