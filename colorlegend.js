@@ -1,3 +1,6 @@
+/*jshint browser:true, indent:2, globalstrict: true, laxcomma: true, laxbreak: true */
+/*global d3:true */
+
 /*
 # d3.colorLegend
 
@@ -27,21 +30,21 @@ The height and width of the legend are defined by the size of target element. Th
 
 */
 
-colorlegend = function(target, scale, type, options) {
+'use strict';
+
+var colorlegend = function (target, scale, type, options) {
 
   // check for valid input - 'quantize' not included
   var scaleTypes = ['linear', 'quantile', 'ordinal'];
   var found = false;
-  for ( var i = 0 ; i < scaleTypes.length ; i++ ) {
-    if ( scaleTypes[i] === type ) {
+  for (var i = 0 ; i < scaleTypes.length ; i++) {
+    if (scaleTypes[i] === type) {
       found = true;
       break;
     }
   }
-  if ( ! found ) {
+  if (! found)
     throw new Error('Scale type, ' + type + ', is not suported.');
-    return false;
-  }
 
   // empty options if none were passed
   var opts = options || {};
@@ -55,7 +58,7 @@ colorlegend = function(target, scale, type, options) {
   
   // get width and height of the target element - strip the prefix #
   var htmlElement;
-  if ( target.substring(0, 1) === '#' ) {
+  if (target.substring(0, 1) === '#') {
     htmlElement = document.getElementById(target.substring(1, target.length));
   }
   else {
@@ -75,28 +78,28 @@ colorlegend = function(target, scale, type, options) {
   
   // setup the colors to use
   var colors = [];
-  if ( type === 'quantile' ) {
+  if (type === 'quantile') {
     colors = range;
   }
-  else if ( type === 'ordinal' ) {
-    for ( var i = 0 ; i < domain.length ; i++ ) {
+  else if (type === 'ordinal') {
+    for (var i = 0 ; i < domain.length ; i++) {
       colors[i] = range[i];
     }
   }
-  else if ( type === 'linear' ) {
+  else if (type === 'linear') {
     var min = domain[0];
-    var max = domain[domain.length-1];
-    for ( var i = 0; i < linearBoxes ; i++  ) {
-      colors[i] = scale( i * ((max-min)/linearBoxes) );
+    var max = domain[domain.length - 1];
+    for (var i = 0; i < linearBoxes ; i++) {
+      colors[i] = scale(i * ((max - min) / linearBoxes));
     }
   }
   
   // check the width and height and adjust if necessary to fit in the element
   // use the range if quantile
-  if ( fill || w < (boxWidth+boxSpacing)*colors.length + padding[1] + padding[3] ) {
+  if (fill || w < (boxWidth + boxSpacing) * colors.length + padding[1] + padding[3]) {
     boxWidth = (w - padding[1] - padding[3] - (boxSpacing * colors.length)) / colors.length;
   }
-  if ( fill || h < boxHeight + padding[0] + padding[2] + titlePadding ) {  
+  if (fill || h < boxHeight + padding[0] + padding[2] + titlePadding) {  
     boxHeight = h - padding[0] - padding[2] - titlePadding;    
   }
   
@@ -111,7 +114,7 @@ colorlegend = function(target, scale, type, options) {
       .style('font-size', '11px')
       .style('fill', '#666');
       
-  legendBoxes = legend.selectAll('g.legend')
+  var legendBoxes = legend.selectAll('g.legend')
       .data(colors)
     .enter().append('g');
 
@@ -119,19 +122,19 @@ colorlegend = function(target, scale, type, options) {
   legendBoxes.append('text')
       .attr('class', 'colorlegend-labels')
       .attr('dy', '.71em')
-      .attr('x', function(d,i) {
+      .attr('x', function (d, i) {
         return i * (boxWidth + boxSpacing) + (type !== 'ordinal' ? (boxWidth / 2) : 0);
       })
-      .attr('y', function(d,i) {
+      .attr('y', function () {
         return boxHeight + 2;
       })
-      .style('text-anchor', function(d, i) {
+      .style('text-anchor', function () {
         return type === 'ordinal' ? 'start' : 'middle';
       })
       .style('pointer-events', 'none')
-      .text(function(d,i) {
+      .text(function (d, i) {
         // show label for all ordinal values
-        if ( type === 'ordinal' ) {
+        if (type === 'ordinal') {
           return domain[i];
         }
         // show only the first and last for others
@@ -146,18 +149,18 @@ colorlegend = function(target, scale, type, options) {
         
         
   legendBoxes.append('rect')
-      .attr('x', function(d,i) { 
+      .attr('x', function (d, i) { 
         return i * (boxWidth + boxSpacing);
       })
       .attr('width', boxWidth)
       .attr('height', boxHeight)
-      .style('fill', function(d, i) { return colors[i]; } );
+      .style('fill', function (d, i) { return colors[i]; });
   
   // show a title in center of legend (bottom)
-  if ( title ) {
+  if (title) {
     legend.append('text')
         .attr('class', 'colorlegend-title')
-        .attr('x', (colors.length*(boxWidth/2)))
+        .attr('x', (colors.length * (boxWidth / 2)))
         .attr('y', boxHeight + titlePadding)
         .attr('dy', '.71em')
         .style('text-anchor', 'middle')
@@ -166,4 +169,4 @@ colorlegend = function(target, scale, type, options) {
   }
     
   return this;
-}
+};
