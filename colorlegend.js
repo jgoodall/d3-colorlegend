@@ -15,10 +15,27 @@
 
 var colorlegend = function (target, scale, type, options) {
 
+  var scaleTypes = ['linear', 'quantile', 'ordinal']
+    , found = false
+    , opts = options || {}
+    , boxWidth = opts.boxWidth || 20        // width of each box (int)
+    , boxHeight = opts.boxHeight || 20      // height of each box (int)
+    , title = opts.title || null            // draw title (string)
+    , fill = opts.fill || false             // fill the element (boolean)
+    , linearBoxes = opts.linearBoxes || 9   // number of boxes for linear scales (int)
+    , htmlElement = document.getElementById(target.substring(0, 1) === '#' ? target.substring(1, target.length) : target)  // target container element - strip the prefix #
+    , w = htmlElement.offsetWidth           // width of container element
+    , h = htmlElement.offsetHeight          // height of container element
+    , colors = []
+    , padding = [2, 4, 10, 4]               // top, right, bottom, left
+    , boxSpacing = type === 'ordinal' ? 3 : 0 // spacing between boxes
+    , titlePadding = title ? 11 : 0
+    , domain = scale.domain()
+    , range = scale.range()    
+    , i = 0;
+
   // check for valid input - 'quantize' not included
-  var scaleTypes = ['linear', 'quantile', 'ordinal'];
-  var found = false;
-  for (var i = 0 ; i < scaleTypes.length ; i++) {
+  for (i = 0 ; i < scaleTypes.length ; i++) {
     if (scaleTypes[i] === type) {
       found = true;
       break;
@@ -27,50 +44,20 @@ var colorlegend = function (target, scale, type, options) {
   if (! found)
     throw new Error('Scale type, ' + type + ', is not suported.');
 
-  // empty options if none were passed
-  var opts = options || {};
-  
-  // options or use defaults
-  var boxWidth = opts.boxWidth || 20;     // width of each box (int)
-  var boxHeight = opts.boxHeight || 20;   // height of each box (int)
-  var title = opts.title || null;         // draw title (string)
-  var fill = opts.fill || false;          // fill the element (boolean)
-  var linearBoxes = opts.linearBoxes || 9; // number of boxes for linear scales (int)
-  
-  // get width and height of the target element - strip the prefix #
-  var htmlElement;
-  if (target.substring(0, 1) === '#') {
-    htmlElement = document.getElementById(target.substring(1, target.length));
-  }
-  else {
-    htmlElement = document.getElementById(target);
-  }
-  var w = htmlElement.offsetWidth;
-  var h = htmlElement.offsetHeight;
-  
-  // set padding for legend and individual boxes
-  var padding = [2, 4, 10, 4]; // top, right, bottom, left
-  var boxSpacing = type === 'ordinal' ? 3 : 0; // spacing between boxes
-  var titlePadding = title ? 11 : 0;
-  
-  // properties of the scale that will be used
-  var domain = scale.domain();
-  var range = scale.range();
   
   // setup the colors to use
-  var colors = [];
   if (type === 'quantile') {
     colors = range;
   }
   else if (type === 'ordinal') {
-    for (var i = 0 ; i < domain.length ; i++) {
+    for (i = 0 ; i < domain.length ; i++) {
       colors[i] = range[i];
     }
   }
   else if (type === 'linear') {
     var min = domain[0];
     var max = domain[domain.length - 1];
-    for (var i = 0; i < linearBoxes ; i++) {
+    for (i = 0; i < linearBoxes ; i++) {
       colors[i] = scale(i * ((max - min) / linearBoxes));
     }
   }
@@ -126,9 +113,8 @@ var colorlegend = function (target, scale, type, options) {
             return domain[domain.length - 1];
         }
       });
-      
-        
-        
+
+  // the colors, each color is drawn as a rectangle
   legendBoxes.append('rect')
       .attr('x', function (d, i) { 
         return i * (boxWidth + boxSpacing);
