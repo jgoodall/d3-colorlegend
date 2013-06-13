@@ -58,7 +58,7 @@ var colorlegend = function (target, scale, type, options) {
     var min = domain[0];
     var max = domain[domain.length - 1];
     for (i = 0; i < linearBoxes ; i++) {
-      colors[i] = scale(i * ((max - min) / linearBoxes));
+      colors[i] = scale(min + i * ((max - min) / linearBoxes));
     }
   }
   
