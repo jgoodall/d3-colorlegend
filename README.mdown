@@ -20,6 +20,7 @@ The height and width of the legend are defined by the size of target element. Th
     * title:  string to add to the legend; centered, below the boxes and labels (default: '')
     * fill:  boolean to fill the entire space of the legend (default: false)
     * linearBoxes: integer to set the number of boxes to show for linear scales (default: 9)
+    * vertical: boolean to set the legend vertical (default: false)
   
   
 ## Styles
