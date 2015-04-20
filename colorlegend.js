@@ -14,7 +14,6 @@
 'use strict';
 
 var colorlegend = function (target, scale, type, options) {
-
   var scaleTypes = ['linear', 'quantile', 'ordinal']
     , found = false
     , opts = options || {}
@@ -32,7 +31,8 @@ var colorlegend = function (target, scale, type, options) {
     , titlePadding = title ? 11 : 0
     , domain = scale.domain()
     , range = scale.range()    
-    , i = 0;
+    , i = 0
+    , isVertical = opts.vertical || false;
 
   // check for valid input - 'quantize' not included
   for (i = 0 ; i < scaleTypes.length ; i++) {
@@ -62,14 +62,24 @@ var colorlegend = function (target, scale, type, options) {
     }
   }
   
-  // check the width and height and adjust if necessary to fit in the element
-  // use the range if quantile
-  if (fill || w < (boxWidth + boxSpacing) * colors.length + padding[1] + padding[3]) {
+  // check the width and height and adjust if necessary to fit in the element use the range if quantile
+  if (!isVertical) {
+    if (fill || w < (boxWidth + boxSpacing) * colors.length + padding[1] + padding[3]) {
     boxWidth = (w - padding[1] - padding[3] - (boxSpacing * colors.length)) / colors.length;
+    }
+    if (fill || h < boxHeight + padding[0] + padding[2] + titlePadding) {  
+      boxHeight = h - padding[0] - padding[2] - titlePadding;    
+    }
+
+  } else {
+    if (fill || h < (boxHeight + boxSpacing) * colors.length + padding[0] + padding[2]) {
+    boxHeight = (h - padding[0] - padding[2] - (boxSpacing * colors.length)) / colors.length;
+    }
+    if (fill || w < boxWidth + padding[1] + padding[3] + titlePadding) {  
+      boxWidth = w - padding[1] - padding[3] - titlePadding;    
+    }    
   }
-  if (fill || h < boxHeight + padding[0] + padding[2] + titlePadding) {  
-    boxHeight = h - padding[0] - padding[2] - titlePadding;    
-  }
+  
   
   // set up the legend graphics context
   var legend = d3.select(target)
@@ -87,7 +97,9 @@ var colorlegend = function (target, scale, type, options) {
     .enter().append('g');
 
   // value labels
-  legendBoxes.append('text')
+  var valueLabels;
+  if (!isVertical) {
+    valueLabels = legendBoxes.append('text')
       .attr('class', 'colorlegend-labels')
       .attr('dy', '.71em')
       .attr('x', function (d, i) {
@@ -95,7 +107,20 @@ var colorlegend = function (target, scale, type, options) {
       })
       .attr('y', function () {
         return boxHeight + 2;
+      });
+  } else {
+    valueLabels = legendBoxes.append('text')
+      .attr('class', 'colorlegend-labels')
+      .attr('dy', padding[0])
+      .attr('x', function () {
+        // return boxWidth + titlePadding;
+        return titlePadding;
       })
+      .attr('y', function (d, i) {
+        return i * (boxHeight + boxSpacing) + boxHeight / 2;
+      });
+  }
+  valueLabels    
       .style('text-anchor', function () {
         return type === 'ordinal' ? 'start' : 'middle';
       })
@@ -114,25 +139,50 @@ var colorlegend = function (target, scale, type, options) {
         }
       });
 
+
   // the colors, each color is drawn as a rectangle
-  legendBoxes.append('rect')
+  if (!isVertical) {
+    legendBoxes.append('rect')
       .attr('x', function (d, i) { 
         return i * (boxWidth + boxSpacing);
       })
       .attr('width', boxWidth)
       .attr('height', boxHeight)
       .style('fill', function (d, i) { return colors[i]; });
-  
+
+  } else {
+    legendBoxes.append('rect')
+        .attr('y', function(d, i) {
+          return i * (boxHeight + boxSpacing);
+        })  
+        .attr('x', function() {
+          return w - boxWidth - padding[1] - padding[3];
+        })
+        .attr('width', boxWidth)
+        .attr('height', boxHeight)
+        .style('fill', function (d, i) { return colors[i]; });  
+  }
+
   // show a title in center of legend (bottom)
   if (title) {
-    legend.append('text')
-        .attr('class', 'colorlegend-title')
-        .attr('x', (colors.length * (boxWidth / 2)))
-        .attr('y', boxHeight + titlePadding)
-        .attr('dy', '.71em')
+    var legendText = legend.append('text')
+        .attr('class', 'colorlegend-title')   
         .style('text-anchor', 'middle')
         .style('pointer-events', 'none')
         .text(title);
+
+    if (!isVertical) {
+      legendText
+        .attr('dy', '.71em')
+        .attr('x', (colors.length * (boxWidth / 2)))
+        .attr('y', boxHeight + titlePadding);
+
+    } else {
+      legendText       
+        .attr('dy', '.51em')
+        .attr('y', (colors.length * (boxHeight / 2)))
+        .attr('transform', 'rotate(90, 5,' + (colors.length * (boxHeight / 2)) + ')');
+    }
   }
     
   return this;
